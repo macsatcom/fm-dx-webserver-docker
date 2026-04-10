@@ -28,12 +28,3 @@ docker compose up -d
 GitHub Actions checks daily at 04:00 UTC whether a new commit has been pushed to the official repo.
 If so, a new image is built and pushed automatically to GitHub Container Registry (ghcr.io).
 
-## Setup after pushing to GitHub
-
-1. Go to your repo on GitHub
-2. Click **Settings** → **Actions** → **General**
-3. Under "Workflow permissions" → select **Read and write permissions** → click **Save**
-4. Go to the **Actions** tab → select "Build and Push Docker Image" → click **Run workflow**
-
-The first image will now be built and available at:
-`ghcr.io/YOURUSERNAME/fm-dx-webserver:latest`
