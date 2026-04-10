@@ -1,0 +1,68 @@
+name: Build and Push Docker Image
+
+on:
+  schedule:
+    - cron: '0 4 * * *'
+  workflow_dispatch:
+
+jobs:
+  check-and-build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      - name: Checkout dette repo
+        uses: actions/checkout@v4
+
+      - name: Hent seneste release fra officielt repo
+        id: upstream
+        run: |
+          LATEST=$(curl -s https://api.github.com/repos/NoobishSVK/fm-dx-webserver/releases/latest | jq -r '.tag_name')
+          echo "version=$LATEST" >> $GITHUB_OUTPUT
+          echo "Seneste version: $LATEST"
+
+      - name: Tjek om vi allerede har bygget denne version
+        id: check
+        run: |
+          CURRENT=$(cat .last-built-version 2>/dev/null || echo "none")
+          echo "Sidst bygget: $CURRENT"
+          if [ "$CURRENT" = "${{ steps.upstream.outputs.version }}" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Set up Docker Buildx
+        if: steps.check.outputs.skip == 'false'
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log ind på GitHub Container Registry
+        if: steps.check.outputs.skip == 'false'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Byg og push Docker image
+        if: steps.check.outputs.skip == 'false'
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          build-args: VERSION=${{ steps.upstream.outputs.version }}
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/fm-dx-webserver:latest
+            ghcr.io/${{ github.repository_owner }}/fm-dx-webserver:${{ steps.upstream.outputs.version }}
+
+      - name: Gem seneste byggede version
+        if: steps.check.outputs.skip == 'false'
+        run: |
+          echo "${{ steps.upstream.outputs.version }}" > .last-built-version
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .last-built-version
+          git commit -m "chore: built version ${{ steps.upstream.outputs.version }}"
+          git push
