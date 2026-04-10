@@ -1,39 +1,39 @@
 # fm-dx-webserver Docker
 
-Automatisk Docker-wrapper til [fm-dx-webserver](https://github.com/NoobishSVK/fm-dx-webserver).
+Automatic Docker wrapper for [fm-dx-webserver](https://github.com/NoobishSVK/fm-dx-webserver).
 
-Dette repo bygger automatisk et nyt Docker image, når der udkommer en ny officiel release.
+This repo automatically builds a new Docker image whenever a new commit is pushed to the official repo.
 
-## Hurtigt i gang
+## Quick start
 
-Kør med Docker:
+Run with Docker:
 
 ```bash
 docker run -d \
   -p 8080:8080 \
   --device=/dev/ttyUSB0 \
-  ghcr.io/DITBRUGERNAVN/fm-dx-webserver:latest
+  ghcr.io/YOURUSERNAME/fm-dx-webserver:latest
 ```
 
-Eller med docker-compose:
+Or with docker-compose:
 
 ```bash
 docker compose up -d
 ```
 
-> Erstat `DITBRUGERNAVN` med dit GitHub-brugernavn.
+> Replace `YOURUSERNAME` with your GitHub username.
 
-## Automatisk opdatering
+## Automatic updates
 
-GitHub Actions tjekker dagligt kl. 04:00 UTC om der er en ny release på det officielle repo.
-Hvis ja, bygges og pushes et nyt image automatisk til GitHub Container Registry (ghcr.io).
+GitHub Actions checks daily at 04:00 UTC whether a new commit has been pushed to the official repo.
+If so, a new image is built and pushed automatically to GitHub Container Registry (ghcr.io).
 
-## Opsætning efter push til GitHub
+## Setup after pushing to GitHub
 
-1. Gå til dit repo på GitHub
-2. Klik på **Settings** → **Actions** → **General**
-3. Under "Workflow permissions" → vælg **Read and write permissions** → klik **Save**
-4. Gå til **Actions**-fanen → vælg "Build and Push Docker Image" → klik **Run workflow**
+1. Go to your repo on GitHub
+2. Click **Settings** → **Actions** → **General**
+3. Under "Workflow permissions" → select **Read and write permissions** → click **Save**
+4. Go to the **Actions** tab → select "Build and Push Docker Image" → click **Run workflow**
 
-Det første image bliver nu bygget og lagt på:
-`ghcr.io/DITBRUGERNAVN/fm-dx-webserver:latest`
+The first image will now be built and available at:
+`ghcr.io/YOURUSERNAME/fm-dx-webserver:latest`
