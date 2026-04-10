@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Checkout dette repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Hent seneste commit SHA fra officielt repo
         id: upstream
@@ -38,11 +38,11 @@ jobs:
 
       - name: Set up Docker Buildx
         if: steps.check.outputs.skip == 'false'
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Log ind på GitHub Container Registry
         if: steps.check.outputs.skip == 'false'
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -50,7 +50,7 @@ jobs:
 
       - name: Byg og push Docker image
         if: steps.check.outputs.skip == 'false'
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: .
           push: true
@@ -67,4 +67,5 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .last-built-version
           git commit -m "chore: built commit ${{ steps.upstream.outputs.short_sha }}"
+          git pull --rebase origin master
           git push
