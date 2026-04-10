@@ -12,7 +12,7 @@ Run with Docker:
 docker run -d \
   -p 8080:8080 \
   --device=/dev/ttyUSB0 \
-  ghcr.io/YOURUSERNAME/fm-dx-webserver:latest
+  ghcr.io/macsatcom/fm-dx-webserver:latest
 ```
 
 Or with docker-compose:
@@ -21,10 +21,15 @@ Or with docker-compose:
 docker compose up -d
 ```
 
-> Replace `YOURUSERNAME` with your GitHub username.
+This uses `docker-compose.yml`, which pulls the pre-built image from ghcr.io.
+
+If you want to build the image locally instead, use:
+
+```bash
+docker compose -f docker-compose-build.yml up -d
+```
 
 ## Automatic updates
 
 GitHub Actions checks daily at 04:00 UTC whether a new commit has been pushed to the official repo.
 If so, a new image is built and pushed automatically to GitHub Container Registry (ghcr.io).
-

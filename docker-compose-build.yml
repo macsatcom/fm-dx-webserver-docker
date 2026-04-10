@@ -2,7 +2,11 @@ version: '3.8'
 
 services:
   fm-dx-webserver:
-    image: ghcr.io/macsatcom/fm-dx-webserver:latest
+    image: fm-dx-webserver:latest
+    build:
+      context: .
+      args:
+        VERSION: latest
     ports:
       - "8080:8080"
     devices:
