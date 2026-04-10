@@ -17,6 +17,17 @@ docker run -d \
 
 Or with docker-compose:
 
+```yaml
+services:
+  fm-dx-webserver:
+    image: ghcr.io/macsatcom/fm-dx-webserver:latest
+    ports:
+      - "8080:8080"
+    devices:
+      - "/dev/ttyUSB0:/dev/ttyUSB0"
+    restart: unless-stopped
+```
+
 ```bash
 docker compose up -d
 ```
