@@ -6,4 +6,6 @@ services:
     devices:
       - "/dev/ttyUSB0:/dev/ttyUSB0"
       - "/dev/snd:/dev/snd"
+    volumes:
+      - /run/udev:/run/udev:ro
     restart: unless-stopped
