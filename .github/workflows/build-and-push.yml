@@ -16,19 +16,21 @@ jobs:
       - name: Checkout dette repo
         uses: actions/checkout@v4
 
-      - name: Hent seneste release fra officielt repo
+      - name: Hent seneste commit SHA fra officielt repo
         id: upstream
         run: |
-          LATEST=$(curl -s https://api.github.com/repos/NoobishSVK/fm-dx-webserver/releases/latest | jq -r '.tag_name')
-          echo "version=$LATEST" >> $GITHUB_OUTPUT
-          echo "Seneste version: $LATEST"
+          SHA=$(curl -s https://api.github.com/repos/NoobishSVK/fm-dx-webserver/commits/main | jq -r '.sha')
+          SHORT_SHA=${SHA:0:7}
+          echo "sha=$SHA" >> $GITHUB_OUTPUT
+          echo "short_sha=$SHORT_SHA" >> $GITHUB_OUTPUT
+          echo "Seneste commit: $SHORT_SHA"
 
       - name: Tjek om vi allerede har bygget denne version
         id: check
         run: |
           CURRENT=$(cat .last-built-version 2>/dev/null || echo "none")
           echo "Sidst bygget: $CURRENT"
-          if [ "$CURRENT" = "${{ steps.upstream.outputs.version }}" ]; then
+          if [ "$CURRENT" = "${{ steps.upstream.outputs.sha }}" ]; then
             echo "skip=true" >> $GITHUB_OUTPUT
           else
             echo "skip=false" >> $GITHUB_OUTPUT
@@ -53,17 +55,16 @@ jobs:
           context: .
           push: true
           network: host
-          build-args: VERSION=${{ steps.upstream.outputs.version }}
           tags: |
             ghcr.io/${{ github.repository_owner }}/fm-dx-webserver:latest
-            ghcr.io/${{ github.repository_owner }}/fm-dx-webserver:${{ steps.upstream.outputs.version }}
+            ghcr.io/${{ github.repository_owner }}/fm-dx-webserver:${{ steps.upstream.outputs.short_sha }}
 
       - name: Gem seneste byggede version
         if: steps.check.outputs.skip == 'false'
         run: |
-          echo "${{ steps.upstream.outputs.version }}" > .last-built-version
+          echo "${{ steps.upstream.outputs.sha }}" > .last-built-version
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .last-built-version
-          git commit -m "chore: built version ${{ steps.upstream.outputs.version }}"
+          git commit -m "chore: built commit ${{ steps.upstream.outputs.short_sha }}"
           git push

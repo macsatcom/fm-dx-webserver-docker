@@ -4,13 +4,7 @@ RUN apk add --no-cache git cmake make g++ python3
 
 WORKDIR /app
 
-ARG VERSION=latest
-
-RUN if [ "$VERSION" = "latest" ]; then \
-      git clone --depth 1 https://github.com/NoobishSVK/fm-dx-webserver.git .; \
-    else \
-      git clone --depth 1 --branch $VERSION https://github.com/NoobishSVK/fm-dx-webserver.git .; \
-    fi
+RUN git clone --depth 1 https://github.com/NoobishSVK/fm-dx-webserver.git .
 
 RUN npm install --production
 
