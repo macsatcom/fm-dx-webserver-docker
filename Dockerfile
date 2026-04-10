@@ -1,6 +1,6 @@
 FROM node:20-alpine
 
-RUN apk add --no-cache git cmake make g++ python3
+RUN apk add --no-cache git cmake make g++ python3 alsa-utils
 
 WORKDIR /app
 
